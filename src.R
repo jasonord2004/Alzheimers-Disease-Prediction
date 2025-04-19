@@ -13,6 +13,8 @@ summary(data)
 dim(data)
 
 str(data)
+
+#####
 # Converting each feature into a factor with their respective labels
 # Demographic detail factors
 data$Gender <- factor(data$Gender, levels = c(0, 1), labels=c("Male", "Female"))
@@ -41,6 +43,8 @@ data$Forgetfulness <- factor(data$Forgetfulness, levels = c(0, 1), labels = c("N
 # Diagnosis info
 data$Diagnosis <- factor(data$Diagnosis, levels = c(0, 1), labels = c("No", "Yes"))
 
+##### 
+# Data Visualization
 head(data)
 diagnosis <- data$Diagnosis
 tableDiagnosis <- table(diagnosis)
@@ -51,8 +55,10 @@ barplot(tableDiagnosis, col="lightblue", main="Distribution of Diagnosis", xlab=
 
 age <- data$Age
 tableAge <- table(age)
+# Age Distribution in data set
 barplot(tableAge, col="khaki", main="Distribution of Ages", xlab="Age", ylab="# of Observations")
 
+# Diagnosis vs Age
 plot(diagnosis, data$Age, col="coral", xlab="Diagnosis", ylab="Age", main="Diagnosis vs Age")
 
 
