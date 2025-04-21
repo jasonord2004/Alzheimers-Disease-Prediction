@@ -43,6 +43,8 @@ data$Forgetfulness <- factor(data$Forgetfulness, levels = c(0, 1), labels = c("N
 # Diagnosis info
 data$Diagnosis <- factor(data$Diagnosis, levels = c(0, 1), labels = c("No", "Yes"))
 
+# Remove DoctorInCharge Column (All values are "XXXConfid")
+data <- data[, -35]
 
 ##### 
 
@@ -94,11 +96,68 @@ barplot(tableSymptoms, names.arg=names, las=2, col="lightgrey", main="Distributi
 
 #####
 
-
 #2. Classification Pr#2. Classification Pr#2. Classification Procedures
   # Rpart Model
     # Show Confusion Matrix from Decision Tree
+
+# Splits data into Training and Testing
+(data_split <- initial_split(data, prop=0.80))
+
+# Training data breakdown
+training_data <- training(data_split)
+summary(training_data)
+prop.table(table(training_data$Diagnosis))
+
+# Testing data breakdown
+testing_data <- testing(data_split)
+summary(testing_data)
+prop.table(table(testing_data$Diagnosis))
+
+# Constructs rpart tree using default cp at 0.0001
+tree <- rpart(Diagnosis ~ ., data= training_data, method = 'class', cp=0.0001)
+rpart.plot(tree, fallen.leaves = FALSE)
+printcp(tree)
+
+# Finding best cp to prune the tree
+min_error_row <- which.min(tree$cptable[, "xerror"])
+(best_cp <- tree$cptable[min_error_row, "CP"])
+# Best cp = 0.003355705
+
+# Creating a pruned tree
+pruned_tree <- prune(tree, cp=best_cp)
+rpart.plot(pruned_tree, fallen.leaves = FALSE)
+printcp(pruned_tree)
+
+# Confusion Matrix with Regular Tree (Predicting Training Data)
+predict_tree <- predict(tree, testing_data, type="class")
+(confusion_Matrix_tree <- table(predict_tree, testing_data$Diagnosis))
+caret::confusionMatrix((confusion_Matrix_tree), positive="Yes")
+# Accuracy = 0.9442
+
+# Confusion Matrix with Pruned Tree (Predicting Training Data)
+predict_prunedtree <- predict(pruned_tree, testing_data, type="class")
+(confusion_Matrix_prunedtree <- table(predict_prunedtree, testing_data$Diagnosis))
+caret::confusionMatrix((confusion_Matrix_prunedtree), positive="Yes")
+# Accuracy = 0.9442
+
+# K-Fold Validation with K=10
+control <- trainControl(method='cv', number=10, savePredictions=TRUE)
+(rpart_cv <- train(Diagnosis ~ ., data=training_data, method='rpart', trControl = control))
+(best_cp_in_cv <- rpart_cv$results[which.max(rpart_cv$results[, 'Kappa']), "cp"])
+
+# Creating final tree with best cp in Cross Validation
+(finaltree <- rpart(Diagnosis ~., data = training_data, method = 'class', control = rpart.control(cp=best_cp_in_cv)))
+printcp(finaltree)
+rpart.plot(finaltree, fallen.leaves = FALSE)
+
+# Predicting with the 10 Fold Cross Validation Tree (Predicting Testing Data)
+predict_finaltree <- predict(finaltree, testing_data, type="class")
+(confusion_finaltree <- table(predict_finaltree, testing_data$Diagnosis))
+caret::confusionMatrix((confusion_finaltree), positive="Yes")
+# Accuracy = 0.8302 
+
   # Naive Bayes Model
     # Use classification variable and predictors chosen from rpart
     # Show Confusion Matrix
   # Compare accuracies
+
