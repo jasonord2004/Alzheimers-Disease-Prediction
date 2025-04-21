@@ -156,8 +156,13 @@ predict_finaltree <- predict(finaltree, testing_data, type="class")
 caret::confusionMatrix((confusion_finaltree), positive="Yes")
 # Accuracy = 0.8302 
 
-  # Naive Bayes Model
-    # Use classification variable and predictors chosen from rpart
-    # Show Confusion Matrix
-  # Compare accuracies
-
+# Naive Bayes Model
+# Use classification variable and predictors chosen from rpart
+nb_model <- NaiveBayes(Diagnosis~FunctionalAssessment+MMSE+ADL, data = training_data)
+nb_pred <- predict(nb_model, testing_data)
+# Show Confusion Matrix
+tab_nb <- table(nb_pred$class, testing_data$Diagnosis)
+caret::confusionMatrix(tab_nb)
+# Compare accuracies
+cat("rpart Accuracy: 0.8302")
+cat("Naive Bayes Accuracy: 0.8093")
