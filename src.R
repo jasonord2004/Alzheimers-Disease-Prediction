@@ -43,7 +43,9 @@ data$Forgetfulness <- factor(data$Forgetfulness, levels = c(0, 1), labels = c("N
 # Diagnosis info
 data$Diagnosis <- factor(data$Diagnosis, levels = c(0, 1), labels = c("No", "Yes"))
 
+
 ##### 
+
 # Data Visualization
 head(data)
 diagnosis <- data$Diagnosis
@@ -54,13 +56,43 @@ proportionDiagnosis <- prop.table(tableDiagnosis)
 barplot(tableDiagnosis, col="lightblue", main="Distribution of Diagnosis", xlab="Diagnosis", ylab="# of Observations")
 
 age <- data$Age
-tableAge <- table(age)
+tableAge <- table(age) 
 # Age Distribution in data set
 barplot(tableAge, col="khaki", main="Distribution of Ages", xlab="Age", ylab="# of Observations")
 
 # Diagnosis vs Age
 plot(diagnosis, data$Age, col="coral", xlab="Diagnosis", ylab="Age", main="Diagnosis vs Age")
 
+# Distribution of Symptoms with Alzheimer's Diagnosis
+(tableSymptoms <- c(
+  sum(data$Smoking == "Yes", na.rm = TRUE),
+  sum(data$FamilyHistoryAlzheimers == "Yes", na.rm = TRUE),
+  sum(data$CardiovascularDisease == "Yes", na.rm = TRUE),
+  sum(data$Diabetes == "Yes", na.rm = TRUE),
+  sum(data$Depression == "Yes", na.rm = TRUE),
+  sum(data$HeadInjury == "Yes", na.rm = TRUE),
+  sum(data$Hypertension == "Yes", na.rm = TRUE),
+  sum(data$MemoryComplaints == "Yes", na.rm = TRUE),
+  sum(data$BehavioralProblems == "Yes", na.rm = TRUE),
+  sum(data$Confusion == "Yes", na.rm = TRUE),
+  sum(data$Disorientation == "Yes", na.rm = TRUE),
+  sum(data$PersonalityChanges == "Yes", na.rm = TRUE),
+  sum(data$DifficultyCompletingTasks == "Yes", na.rm = TRUE),
+  sum(data$Forgetfulness == "Yes", na.rm = TRUE)
+))
+
+names <- c(
+  "Smoking", "FamilyHistoryAlzheimers", "CardiovascularDisease", "Diabetes",
+  "Depression", "HeadInjury", "Hypertension", "MemoryComplaints", "BehavioralProblems",
+  "Confusion", "Disorientation", "PersonalityChanges", "DifficultyCompletingTasks",
+  "Forgetfulness"
+)
+length(names)
+length(tableSymptoms)
+par(mar = c(11, 4, 4, 2)) #Increases bottom margin of graph window in R Studio
+barplot(tableSymptoms, names.arg=names, las=2, col="lightgrey", main="Distribution of Symptoms with Diagnosis", ylab="Frequency")
+
+#####
 
 
 #2. Classification Pr#2. Classification Pr#2. Classification Procedures
