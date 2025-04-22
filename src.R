@@ -5,6 +5,7 @@ library(rsample)
 library(caret)
 library(klaR)
 
+set.seed(12345)
 data <- read.csv("alzheimers_disease_data.csv")
 
 #1. Describe data through Visuals (Charts/Tables/Graphs, etc)
@@ -162,7 +163,7 @@ nb_model <- NaiveBayes(Diagnosis~FunctionalAssessment+MMSE+ADL, data = training_
 nb_pred <- predict(nb_model, testing_data)
 # Show Confusion Matrix
 tab_nb <- table(nb_pred$class, testing_data$Diagnosis)
-caret::confusionMatrix(tab_nb)
+caret::confusionMatrix(tab_nb, positive="Yes")
 # Compare accuracies
 cat("rpart Accuracy: 0.8302")
-cat("Naive Bayes Accuracy: 0.8093")
+cat("Naive Bayes Accuracy: 0.7814")
